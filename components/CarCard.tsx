@@ -4,18 +4,18 @@ import Image from "next/image";
 import { FC, useState } from "react";
 
 import { CarCardProps } from "@/models/CarCard.model";
-import { calculateCarRent } from "@/utils";
+import { calculateCarRent, generateCarImageUrl } from "@/utils";
 
+import CarDetails from "./CarDetails";
 import CustomButton from "./CustomButton";
 
-const CarCard: FC<CarCardProps> = ({
-  car: { year, city_mpg, make, model, transmission, drive },
-}) => {
+const CarCard: FC<CarCardProps> = ({ car }) => {
+  const { year, city_mpg, make, model, transmission, drive } = car;
   const [isOpen, setIsOpen] = useState(false);
   const carRent = calculateCarRent(city_mpg, year);
 
   return (
-    <div className="car-card group">
+    <div className="car-card group shadow-sm">
       <div className="car-card__content">
         <h2 className="car-card__content-title">
           {make} {model}
@@ -29,26 +29,13 @@ const CarCard: FC<CarCardProps> = ({
       </p>
 
       <div className="relative w-full h-40 my-3 object-contain">
-        <Image
-          src="/hero.png"
-          alt="car image"
-          fill
-          priority
-          className="object-contain"
-        />
+        <Image src={generateCarImageUrl(car)} alt="car image" fill priority className="object-contain" />
       </div>
       <div className="relative flex w-full mt-2">
         <div className="flex group-hover:invisible w-full justify-between text-gray">
           <div className="flex flex-col justify-center items-center gap-2">
-            <Image
-              src="/steering-wheel.svg"
-              alt="steering wheel"
-              width={20}
-              height={20}
-            />
-            <p className="text-[14px]">
-              {transmission === "a" ? "Automatic" : "Manual"}
-            </p>
+            <Image src="/steering-wheel.svg" alt="steering wheel" width={20} height={20} />
+            <p className="text-[14px]">{transmission === "a" ? "Automatic" : "Manual"}</p>
           </div>
           <div className="flex flex-col justify-center items-center gap-2">
             <Image src="/tire.svg" alt="tire" width={20} height={20} />
@@ -63,12 +50,14 @@ const CarCard: FC<CarCardProps> = ({
         <div className="car-card__btn-container">
           <CustomButton
             buttonName="View More"
-            customClassName="w-full py-[16px] rounded-full bg-orange-500 text-white"
+            customClassName="w-full py-[16px] rounded-full bg-primary-blue text-white"
             handleClick={() => setIsOpen(true)}
             rightIcon="/right-arrow.svg"
           />
         </div>
       </div>
+
+      <CarDetails isOpen={isOpen} closeModal={() => setIsOpen(false)} car={car} />
     </div>
   );
 };
